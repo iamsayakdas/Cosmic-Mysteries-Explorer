@@ -1,4 +1,5 @@
 import { Canvas } from "@react-three/fiber";
+import StarField from "./environment/Stars";
 
 export default function Universe() {
   return (
@@ -8,7 +9,9 @@ export default function Universe() {
         fov: 60,
       }}
     >
-        <color attach="background" args={["black"]} />
+      <color attach="background" args={["black"]} />
+
+      <StarField />
     </Canvas>
   );
 }
