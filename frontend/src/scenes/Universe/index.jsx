@@ -6,6 +6,7 @@ import Lights from "./environment/Lights";
 
 import Sun from "./celestial/Sun";
 import Earth from "./celestial/Earth";
+import Saturn from "./celestial/Saturn";
 
 export default function Universe() {
   return (
@@ -26,6 +27,8 @@ export default function Universe() {
       <Sun />
 
       <Earth />
+
+      <Saturn />
     </Canvas>
   );
 }
