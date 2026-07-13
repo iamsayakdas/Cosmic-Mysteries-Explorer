@@ -1,5 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
+import Moon from "./Moon";
 
 export default function Earth() {
   const orbitRef = useRef();
@@ -8,12 +9,10 @@ export default function Earth() {
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Orbit around the Sun
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.25;
     }
 
-    // Rotate Earth on its own axis
     if (earthRef.current) {
       earthRef.current.rotation.y += 0.02;
     }
@@ -21,10 +20,14 @@ export default function Earth() {
 
   return (
     <group ref={orbitRef}>
-      <mesh ref={earthRef} position={[4, 0, 0]}>
-        <sphereGeometry args={[0.45, 64, 64]} />
-        <meshStandardMaterial color="#2E86DE" />
-      </mesh>
+      <group position={[4, 0, 0]}>
+        <mesh ref={earthRef}>
+          <sphereGeometry args={[0.45, 64, 64]} />
+          <meshStandardMaterial color="#2E86DE" />
+        </mesh>
+
+        <Moon />
+      </group>
     </group>
   );
 }
