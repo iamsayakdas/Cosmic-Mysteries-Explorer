@@ -3,7 +3,9 @@ import { Canvas } from "@react-three/fiber";
 import StarField from "./environment/Stars";
 import CameraController from "./controls/CameraController";
 import Lights from "./environment/Lights";
+
 import Sun from "./celestial/Sun";
+import Earth from "./celestial/Earth";
 
 export default function Universe() {
   return (
@@ -16,11 +18,14 @@ export default function Universe() {
       <color attach="background" args={["black"]} />
 
       <Lights />
+
       <CameraController />
 
       <StarField />
 
       <Sun />
+
+      <Earth />
     </Canvas>
   );
 }
