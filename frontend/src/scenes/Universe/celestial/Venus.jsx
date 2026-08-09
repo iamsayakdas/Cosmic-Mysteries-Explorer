@@ -1,6 +1,9 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
+import venusTexture from "../../../assets/textures/venus/venus.jpg";
 
 export default function Venus() {
   const orbitRef = useRef();
@@ -8,13 +11,17 @@ export default function Venus() {
 
   const [hovered, setHovered] = useState(false);
 
+  const texture = useTexture(venusTexture);
+
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
+    // Venus orbit
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.32;
     }
 
+    // Venus rotates slowly in the opposite direction
     if (planetRef.current) {
       planetRef.current.rotation.y -= 0.003;
     }
@@ -33,11 +40,13 @@ export default function Venus() {
           setHovered(false);
         }}
       >
-        <sphereGeometry args={[0.3, 48, 48]} />
+        <sphereGeometry args={[0.3, 64, 64]} />
 
         <meshStandardMaterial
-          color="#D9B27C"
-          roughness={0.9}
+          map={texture}
+          color="#ffffff"
+          roughness={1}
+          metalness={0}
         />
 
         <PlanetLabel
