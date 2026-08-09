@@ -1,12 +1,17 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
+import uranusTexture from "../../../assets/textures/uranus/uranus.jpg";
 
 export default function Uranus() {
   const orbitRef = useRef();
   const planetRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const texture = useTexture(uranusTexture);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -35,11 +40,13 @@ export default function Uranus() {
           setHovered(false);
         }}
       >
-        <sphereGeometry args={[0.42, 48, 48]} />
+        <sphereGeometry args={[0.42, 64, 64]} />
 
         <meshStandardMaterial
-          color="#A8DADC"
-          roughness={0.85}
+          map={texture}
+          color="#ffffff"
+          roughness={1}
+          metalness={0}
         />
 
         <PlanetLabel
