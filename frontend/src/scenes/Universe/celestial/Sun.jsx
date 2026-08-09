@@ -1,10 +1,15 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
+import sunTexture from "../../../assets/textures/sun/sun.jpg";
 
 export default function Sun() {
   const sunRef = useRef();
   const [hovered, setHovered] = useState(false);
+
+  const texture = useTexture(sunTexture);
 
   useFrame(() => {
     if (sunRef.current) {
@@ -23,12 +28,16 @@ export default function Sun() {
         setHovered(false);
       }}
     >
-      <sphereGeometry args={[1.3, 64, 64]} />
+      <sphereGeometry args={[1.0, 64, 64]} />
 
       <meshStandardMaterial
-        color="#FDB813"
-        emissive="#ffae00"
-        emissiveIntensity={4}
+        map={texture}
+        color="#ffffff"
+        emissiveMap={texture}
+        emissive="#ffb300"
+        emissiveIntensity={1.5}
+        roughness={1}
+        metalness={0}
       />
 
       <PlanetLabel
