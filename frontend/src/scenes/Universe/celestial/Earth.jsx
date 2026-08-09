@@ -15,6 +15,7 @@ export default function Earth() {
   const earthRef = useRef();
   const cloudsRef = useRef();
   const nightRef = useRef();
+  const atmosphereRef = useRef();
 
   const [hovered, setHovered] = useState(false);
 
@@ -25,24 +26,44 @@ export default function Earth() {
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Earth orbit
+    // =========================
+    // EARTH ORBIT
+    // =========================
+
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.25;
     }
 
-    // Earth rotation
+    // =========================
+    // EARTH ROTATION
+    // =========================
+
     if (earthRef.current) {
       earthRef.current.rotation.y += 0.02;
     }
 
-    // Cloud rotation
+    // =========================
+    // CLOUD ROTATION
+    // =========================
+
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y += 0.0205;
     }
 
-    // Night lights rotate with Earth
+    // =========================
+    // NIGHT LIGHT ROTATION
+    // =========================
+
     if (nightRef.current) {
       nightRef.current.rotation.y += 0.02;
+    }
+
+    // =========================
+    // ATMOSPHERE ROTATION
+    // =========================
+
+    if (atmosphereRef.current) {
+      atmosphereRef.current.rotation.y += 0.0005;
     }
   });
 
@@ -50,9 +71,9 @@ export default function Earth() {
     <group ref={orbitRef}>
       <group position={[4, 0, 0]}>
 
-        {/* ========================= */}
+        {/* ================================= */}
         {/* EARTH SURFACE */}
-        {/* ========================= */}
+        {/* ================================= */}
 
         <mesh
           ref={earthRef}
@@ -79,9 +100,9 @@ export default function Earth() {
           />
         </mesh>
 
-        {/* ========================= */}
+        {/* ================================= */}
         {/* EARTH NIGHT LIGHTS */}
-        {/* ========================= */}
+        {/* ================================= */}
 
         <mesh
           ref={nightRef}
@@ -94,7 +115,7 @@ export default function Earth() {
             transparent
             depthWrite={false}
             depthTest={true}
-            blending={THREE.AdditiveBlending}
+            blending={THREE.NormalBlending}
             uniforms={{
               nightMap: {
                 value: nightTextureMap,
@@ -116,7 +137,8 @@ export default function Earth() {
                 vec4 worldPosition =
                   modelMatrix * vec4(position, 1.0);
 
-                vWorldPosition = worldPosition.xyz;
+                vWorldPosition =
+                  worldPosition.xyz;
 
                 vWorldNormal =
                   normalize(
@@ -140,20 +162,30 @@ export default function Earth() {
 
               void main() {
 
-                // Direction toward the Sun
+                // =================================
+                // SUN DIRECTION
+                // =================================
+
                 vec3 toSun =
                   normalize(
-                    sunPosition - vWorldPosition
+                    sunPosition -
+                    vWorldPosition
                   );
 
-                // Surface orientation relative to Sun
+                // =================================
+                // DAYLIGHT
+                // =================================
+
                 float daylight =
                   dot(
                     normalize(vWorldNormal),
                     toSun
                   );
 
-                // Strong night-side mask
+                // =================================
+                // NIGHT SIDE
+                // =================================
+
                 float nightFactor =
                   smoothstep(
                     0.18,
@@ -161,14 +193,20 @@ export default function Earth() {
                     daylight
                   );
 
-                // Read city-light texture
+                // =================================
+                // NIGHT MAP
+                // =================================
+
                 vec4 nightColor =
                   texture2D(
                     nightMap,
                     vUv
                   );
 
-                // Calculate brightness
+                // =================================
+                // CALCULATE BRIGHTNESS
+                // =================================
+
                 float brightness =
                   dot(
                     nightColor.rgb,
@@ -179,31 +217,48 @@ export default function Earth() {
                     )
                   );
 
-                // Detect city lights
+                // =================================
+                // CITY LIGHT DETECTION
+                //
+                // Higher threshold prevents
+                // dark ocean/background pixels
+                // from becoming lights.
+                // =================================
+
                 float lights =
                   smoothstep(
-                    0.003,
-                    0.06,
+                    0.10,
+                    0.20,
                     brightness
                   );
 
-                // City-light intensity
+                // =================================
+                // CITY LIGHT INTENSITY
+                // =================================
+
                 float intensity =
                   lights *
                   nightFactor *
-                  4.5;
+                  0.75;
 
-                // Warm golden city-light color
+                // =================================
+                // WARM CITY LIGHT COLOR
+                // =================================
+
                 vec3 cityColor =
                   vec3(
                     1.0,
-                    0.55,
-                    0.12
+                    0.65,
+                    0.25
                   );
 
                 vec3 finalColor =
                   cityColor *
                   intensity;
+
+                // =================================
+                // REMOVE INVISIBLE PIXELS
+                // =================================
 
                 if (intensity < 0.01) {
                   discard;
@@ -219,9 +274,9 @@ export default function Earth() {
           />
         </mesh>
 
-        {/* ========================= */}
+        {/* ================================= */}
         {/* EARTH CLOUDS */}
-        {/* ========================= */}
+        {/* ================================= */}
 
         <mesh
           ref={cloudsRef}
@@ -240,9 +295,97 @@ export default function Earth() {
           />
         </mesh>
 
-        {/* ========================= */}
+        {/* ================================= */}
+        {/* EARTH ATMOSPHERE */}
+        {/* ================================= */}
+
+        <mesh
+          ref={atmosphereRef}
+          scale={1.055}
+          renderOrder={4}
+        >
+          <sphereGeometry args={[0.45, 64, 64]} />
+
+          <shaderMaterial
+            transparent
+            depthWrite={false}
+            side={THREE.BackSide}
+            blending={THREE.AdditiveBlending}
+            uniforms={{
+              glowColor: {
+                value: new THREE.Color("#3b9cff"),
+              },
+            }}
+
+            vertexShader={`
+              varying vec3 vNormal;
+              varying vec3 vViewDirection;
+
+              void main() {
+
+                vec4 worldPosition =
+                  modelMatrix *
+                  vec4(position, 1.0);
+
+                vec3 worldNormal =
+                  normalize(
+                    mat3(modelMatrix) *
+                    normal
+                  );
+
+                vNormal =
+                  worldNormal;
+
+                vViewDirection =
+                  normalize(
+                    cameraPosition -
+                    worldPosition.xyz
+                  );
+
+                gl_Position =
+                  projectionMatrix *
+                  viewMatrix *
+                  worldPosition;
+              }
+            `}
+
+            fragmentShader={`
+              uniform vec3 glowColor;
+
+              varying vec3 vNormal;
+              varying vec3 vViewDirection;
+
+              void main() {
+
+                float viewDot =
+                  dot(
+                    normalize(vNormal),
+                    normalize(vViewDirection)
+                  );
+
+                float rim =
+                  pow(
+                    1.0 -
+                    abs(viewDot),
+                    3.0
+                  );
+
+                float intensity =
+                  rim * 0.75;
+
+                gl_FragColor =
+                  vec4(
+                    glowColor,
+                    intensity
+                  );
+              }
+            `}
+          />
+        </mesh>
+
+        {/* ================================= */}
         {/* MOON */}
-        {/* ========================= */}
+        {/* ================================= */}
 
         <Moon />
 
