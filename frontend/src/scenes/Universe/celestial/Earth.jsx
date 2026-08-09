@@ -1,13 +1,18 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
 import Moon from "./Moon";
+import earthTexture from "../../../assets/textures/earth/earth.jpg";
 
 export default function Earth() {
   const orbitRef = useRef();
   const earthRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const texture = useTexture(earthTexture);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -38,7 +43,12 @@ export default function Earth() {
         >
           <sphereGeometry args={[0.45, 64, 64]} />
 
-          <meshStandardMaterial color="#2E86DE" />
+          <meshStandardMaterial
+            map={texture}
+            color="#ffffff"
+            roughness={0.9}
+            metalness={0}
+          />
 
           <PlanetLabel
             name="Earth"
