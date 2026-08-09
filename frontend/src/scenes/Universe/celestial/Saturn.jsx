@@ -1,12 +1,17 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
+import saturnTexture from "../../../assets/textures/saturn/saturn.jpg";
 
 export default function Saturn() {
   const orbitRef = useRef();
   const saturnRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const texture = useTexture(saturnTexture);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -36,11 +41,13 @@ export default function Saturn() {
             setHovered(false);
           }}
         >
-          <sphereGeometry args={[0.55, 48, 48]} />
+          <sphereGeometry args={[0.55, 64, 64]} />
 
           <meshStandardMaterial
-            color="#D9B56D"
-            roughness={0.9}
+            map={texture}
+            color="#ffffff"
+            roughness={1}
+            metalness={0}
           />
 
           <PlanetLabel
@@ -49,15 +56,16 @@ export default function Saturn() {
           />
         </mesh>
 
-        {/* Saturn's rings */}
+        {/* Saturn rings */}
         <mesh rotation={[Math.PI / 2.8, 0, 0]}>
-          <ringGeometry args={[0.75, 1.25, 64]} />
+          <ringGeometry args={[0.72, 1.25, 96]} />
 
           <meshStandardMaterial
             color="#C8B28C"
             side={2}
             transparent
-            opacity={0.7}
+            opacity={0.75}
+            roughness={1}
           />
         </mesh>
       </group>
