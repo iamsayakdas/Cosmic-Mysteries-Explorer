@@ -1,12 +1,17 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
+import moonTexture from "../../../assets/textures/moon/moon.jpg";
 
 export default function Moon() {
   const moonOrbitRef = useRef();
   const moonRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const texture = useTexture(moonTexture);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -35,11 +40,13 @@ export default function Moon() {
           setHovered(false);
         }}
       >
-        <sphereGeometry args={[0.12, 32, 32]} />
+        <sphereGeometry args={[0.12, 48, 48]} />
 
         <meshStandardMaterial
-          color="#B8B8B8"
+          map={texture}
+          color="#ffffff"
           roughness={1}
+          metalness={0}
         />
 
         <PlanetLabel
