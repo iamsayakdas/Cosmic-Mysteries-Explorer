@@ -1,6 +1,9 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+
 import PlanetLabel from "./PlanetLabel";
+import mercuryTexture from "../../../assets/textures/mercury/mercury.jpg";
 
 export default function Mercury() {
   const orbitRef = useRef();
@@ -8,13 +11,17 @@ export default function Mercury() {
 
   const [hovered, setHovered] = useState(false);
 
+  const texture = useTexture(mercuryTexture);
+
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
+    // Mercury orbit
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.45;
     }
 
+    // Mercury rotation
     if (planetRef.current) {
       planetRef.current.rotation.y += 0.01;
     }
@@ -33,11 +40,13 @@ export default function Mercury() {
           setHovered(false);
         }}
       >
-        <sphereGeometry args={[0.16, 32, 32]} />
+        <sphereGeometry args={[0.16, 64, 64]} />
 
         <meshStandardMaterial
-          color="#8C8983"
-          roughness={0.95}
+          map={texture}
+          color="#ffffff"
+          roughness={1}
+          metalness={0}
         />
 
         <PlanetLabel
