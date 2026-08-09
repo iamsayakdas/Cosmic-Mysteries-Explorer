@@ -1,9 +1,11 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { useTexture } from "@react-three/drei";
+import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
 import saturnTexture from "../../../assets/textures/saturn/saturn.jpg";
+import saturnRingTexture from "../../../assets/textures/saturn/saturn-ring.png";
 
 export default function Saturn() {
   const orbitRef = useRef();
@@ -12,6 +14,7 @@ export default function Saturn() {
   const [hovered, setHovered] = useState(false);
 
   const texture = useTexture(saturnTexture);
+  const ringTexture = useTexture(saturnRingTexture);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -57,15 +60,59 @@ export default function Saturn() {
         </mesh>
 
         {/* Saturn rings */}
-        <mesh rotation={[Math.PI / 2.8, 0, 0]}>
-          <ringGeometry args={[0.72, 1.25, 96]} />
+        <mesh
+          rotation={[Math.PI / 2.8, 0, 0]}
+          renderOrder={1}
+        >
+          <ringGeometry args={[0.72, 1.25, 256]} />
 
-          <meshStandardMaterial
-            color="#C8B28C"
-            side={2}
+          <shaderMaterial
             transparent
-            opacity={0.75}
-            roughness={1}
+            depthWrite={false}
+            side={THREE.DoubleSide}
+            uniforms={{
+              ringTexture: {
+                value: ringTexture,
+              },
+            }}
+            vertexShader={`
+              varying vec2 vUv;
+
+              void main() {
+                vUv = uv;
+
+                gl_Position = projectionMatrix
+                  * modelViewMatrix
+                  * vec4(position, 1.0);
+              }
+            `}
+            fragmentShader={`
+              uniform sampler2D ringTexture;
+
+              varying vec2 vUv;
+
+              void main() {
+                // Convert ring UV coordinates into radial distance.
+                vec2 centered = vUv - 0.5;
+
+                float radius = length(centered) * 2.0;
+
+                // The ring texture is a horizontal radial profile.
+                vec4 ring = texture2D(
+                  ringTexture,
+                  vec2(radius, 0.5)
+                );
+
+                if (ring.a < 0.03) {
+                  discard;
+                }
+
+                gl_FragColor = vec4(
+                  ring.rgb,
+                  ring.a
+                );
+              }
+            `}
           />
         </mesh>
       </group>
