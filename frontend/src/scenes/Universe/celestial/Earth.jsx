@@ -1,36 +1,59 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { useTexture } from "@react-three/drei";
+import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
 import Moon from "./Moon";
+
 import earthTexture from "../../../assets/textures/earth/earth.jpg";
+import cloudTexture from "../../../assets/textures/earth/clouds.jpg";
+import nightTexture from "../../../assets/textures/earth/night.jpg";
 
 export default function Earth() {
   const orbitRef = useRef();
   const earthRef = useRef();
+  const cloudsRef = useRef();
+  const nightRef = useRef();
 
   const [hovered, setHovered] = useState(false);
 
   const texture = useTexture(earthTexture);
+  const cloudTextureMap = useTexture(cloudTexture);
+  const nightTextureMap = useTexture(nightTexture);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Earth's orbit around the Sun
+    // Earth orbit
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.25;
     }
 
-    // Earth's rotation
+    // Earth rotation
     if (earthRef.current) {
       earthRef.current.rotation.y += 0.02;
+    }
+
+    // Cloud rotation
+    if (cloudsRef.current) {
+      cloudsRef.current.rotation.y += 0.0205;
+    }
+
+    // Night lights rotate with Earth
+    if (nightRef.current) {
+      nightRef.current.rotation.y += 0.02;
     }
   });
 
   return (
     <group ref={orbitRef}>
       <group position={[4, 0, 0]}>
+
+        {/* ========================= */}
+        {/* EARTH SURFACE */}
+        {/* ========================= */}
+
         <mesh
           ref={earthRef}
           onPointerOver={(event) => {
@@ -56,7 +79,173 @@ export default function Earth() {
           />
         </mesh>
 
+        {/* ========================= */}
+        {/* EARTH NIGHT LIGHTS */}
+        {/* ========================= */}
+
+        <mesh
+          ref={nightRef}
+          scale={1.008}
+          renderOrder={3}
+        >
+          <sphereGeometry args={[0.45, 64, 64]} />
+
+          <shaderMaterial
+            transparent
+            depthWrite={false}
+            depthTest={true}
+            blending={THREE.AdditiveBlending}
+            uniforms={{
+              nightMap: {
+                value: nightTextureMap,
+              },
+
+              sunPosition: {
+                value: new THREE.Vector3(0, 0, 0),
+              },
+            }}
+
+            vertexShader={`
+              varying vec2 vUv;
+              varying vec3 vWorldPosition;
+              varying vec3 vWorldNormal;
+
+              void main() {
+                vUv = uv;
+
+                vec4 worldPosition =
+                  modelMatrix * vec4(position, 1.0);
+
+                vWorldPosition = worldPosition.xyz;
+
+                vWorldNormal =
+                  normalize(
+                    mat3(modelMatrix) * normal
+                  );
+
+                gl_Position =
+                  projectionMatrix *
+                  viewMatrix *
+                  worldPosition;
+              }
+            `}
+
+            fragmentShader={`
+              uniform sampler2D nightMap;
+              uniform vec3 sunPosition;
+
+              varying vec2 vUv;
+              varying vec3 vWorldPosition;
+              varying vec3 vWorldNormal;
+
+              void main() {
+
+                // Direction toward the Sun
+                vec3 toSun =
+                  normalize(
+                    sunPosition - vWorldPosition
+                  );
+
+                // Surface orientation relative to Sun
+                float daylight =
+                  dot(
+                    normalize(vWorldNormal),
+                    toSun
+                  );
+
+                // Strong night-side mask
+                float nightFactor =
+                  smoothstep(
+                    0.18,
+                    -0.08,
+                    daylight
+                  );
+
+                // Read city-light texture
+                vec4 nightColor =
+                  texture2D(
+                    nightMap,
+                    vUv
+                  );
+
+                // Calculate brightness
+                float brightness =
+                  dot(
+                    nightColor.rgb,
+                    vec3(
+                      0.299,
+                      0.587,
+                      0.114
+                    )
+                  );
+
+                // Detect city lights
+                float lights =
+                  smoothstep(
+                    0.003,
+                    0.06,
+                    brightness
+                  );
+
+                // City-light intensity
+                float intensity =
+                  lights *
+                  nightFactor *
+                  4.5;
+
+                // Warm golden city-light color
+                vec3 cityColor =
+                  vec3(
+                    1.0,
+                    0.55,
+                    0.12
+                  );
+
+                vec3 finalColor =
+                  cityColor *
+                  intensity;
+
+                if (intensity < 0.01) {
+                  discard;
+                }
+
+                gl_FragColor =
+                  vec4(
+                    finalColor,
+                    intensity
+                  );
+              }
+            `}
+          />
+        </mesh>
+
+        {/* ========================= */}
+        {/* EARTH CLOUDS */}
+        {/* ========================= */}
+
+        <mesh
+          ref={cloudsRef}
+          scale={1.015}
+          renderOrder={2}
+        >
+          <sphereGeometry args={[0.45, 64, 64]} />
+
+          <meshStandardMaterial
+            map={cloudTextureMap}
+            transparent
+            opacity={0.75}
+            depthWrite={false}
+            roughness={1}
+            metalness={0}
+          />
+        </mesh>
+
+        {/* ========================= */}
+        {/* MOON */}
+        {/* ========================= */}
+
         <Moon />
+
       </group>
     </group>
   );
