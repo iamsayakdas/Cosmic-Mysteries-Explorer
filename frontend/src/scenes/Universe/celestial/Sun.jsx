@@ -1,8 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import PlanetLabel from "./PlanetLabel";
 
 export default function Sun() {
   const sunRef = useRef();
+  const [hovered, setHovered] = useState(false);
 
   useFrame(() => {
     if (sunRef.current) {
@@ -11,12 +13,27 @@ export default function Sun() {
   });
 
   return (
-    <mesh ref={sunRef}>
+    <mesh
+      ref={sunRef}
+      onPointerOver={(event) => {
+        event.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => {
+        setHovered(false);
+      }}
+    >
       <sphereGeometry args={[1.3, 64, 64]} />
+
       <meshStandardMaterial
         color="#FDB813"
         emissive="#ffae00"
         emissiveIntensity={4}
+      />
+
+      <PlanetLabel
+        name="Sun"
+        visible={hovered}
       />
     </mesh>
   );
