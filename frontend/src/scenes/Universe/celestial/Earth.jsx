@@ -371,7 +371,7 @@ export default function Earth() {
                   );
 
                 float intensity =
-                  rim * 0.75;
+                  rim * 0.55;
 
                 gl_FragColor =
                   vec4(
