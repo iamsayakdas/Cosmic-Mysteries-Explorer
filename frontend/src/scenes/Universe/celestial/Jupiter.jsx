@@ -16,7 +16,7 @@ export default function Jupiter() {
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Jupiter orbit
+    // Jupiter orbit around the Sun
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.12;
     }
@@ -29,6 +29,11 @@ export default function Jupiter() {
 
   return (
     <group ref={orbitRef}>
+
+      {/* ========================= */}
+      {/* JUPITER */}
+      {/* ========================= */}
+
       <mesh
         ref={planetRef}
         position={[6.5, 0, 0]}
@@ -44,6 +49,8 @@ export default function Jupiter() {
 
         <meshStandardMaterial
           map={texture}
+          bumpMap={texture}
+          bumpScale={0.006}
           color="#ffffff"
           roughness={1}
           metalness={0}
@@ -54,6 +61,7 @@ export default function Jupiter() {
           visible={hovered}
         />
       </mesh>
+
     </group>
   );
 }
