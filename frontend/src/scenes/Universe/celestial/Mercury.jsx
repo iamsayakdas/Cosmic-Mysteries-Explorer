@@ -16,7 +16,7 @@ export default function Mercury() {
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Mercury orbit
+    // Mercury orbit around the Sun
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.45;
     }
@@ -29,6 +29,11 @@ export default function Mercury() {
 
   return (
     <group ref={orbitRef}>
+
+      {/* ========================= */}
+      {/* MERCURY */}
+      {/* ========================= */}
+
       <mesh
         ref={planetRef}
         position={[2, 0, 0]}
@@ -44,6 +49,8 @@ export default function Mercury() {
 
         <meshStandardMaterial
           map={texture}
+          bumpMap={texture}
+          bumpScale={0.025}
           color="#ffffff"
           roughness={1}
           metalness={0}
@@ -54,6 +61,7 @@ export default function Mercury() {
           visible={hovered}
         />
       </mesh>
+
     </group>
   );
 }
