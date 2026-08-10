@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { useTexture } from "@react-three/drei";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import moonTexture from "../../../assets/textures/moon/moon.jpg";
 
 export default function Moon() {
@@ -10,6 +12,8 @@ export default function Moon() {
   const moonRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(moonTexture);
 
@@ -43,6 +47,10 @@ export default function Moon() {
         }}
         onPointerOut={() => {
           setHovered(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          setSelectedPlanet("Moon");
         }}
       >
         <sphereGeometry args={[0.14, 64, 64]} />

@@ -4,6 +4,8 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import sunTexture from "../../../assets/textures/sun/sun.jpg";
 
 export default function Sun() {
@@ -11,6 +13,8 @@ export default function Sun() {
   const glowRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(sunTexture);
 
@@ -28,7 +32,6 @@ export default function Sun() {
 
   return (
     <group>
-
       {/* ========================= */}
       {/* SUN SURFACE */}
       {/* ========================= */}
@@ -41,6 +44,10 @@ export default function Sun() {
         }}
         onPointerOut={() => {
           setHovered(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          setSelectedPlanet("Sun");
         }}
       >
         <sphereGeometry args={[1.0, 64, 64]} />
@@ -162,7 +169,6 @@ export default function Sun() {
           `}
         />
       </mesh>
-
     </group>
   );
 }

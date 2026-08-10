@@ -4,6 +4,8 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import neptuneTexture from "../../../assets/textures/neptune/neptune.jpg";
 
 export default function Neptune() {
@@ -12,6 +14,8 @@ export default function Neptune() {
   const atmosphereRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(neptuneTexture);
 
@@ -50,6 +54,10 @@ export default function Neptune() {
           }}
           onPointerOut={() => {
             setHovered(false);
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            setSelectedPlanet("Neptune");
           }}
         >
           <sphereGeometry args={[0.40, 64, 64]} />

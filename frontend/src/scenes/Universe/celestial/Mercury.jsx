@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { useTexture } from "@react-three/drei";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import mercuryTexture from "../../../assets/textures/mercury/mercury.jpg";
 
 export default function Mercury() {
@@ -10,6 +12,8 @@ export default function Mercury() {
   const planetRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(mercuryTexture);
 
@@ -29,7 +33,6 @@ export default function Mercury() {
 
   return (
     <group ref={orbitRef}>
-
       {/* ========================= */}
       {/* MERCURY */}
       {/* ========================= */}
@@ -43,6 +46,10 @@ export default function Mercury() {
         }}
         onPointerOut={() => {
           setHovered(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          setSelectedPlanet("Mercury");
         }}
       >
         <sphereGeometry args={[0.16, 64, 64]} />
@@ -61,7 +68,6 @@ export default function Mercury() {
           visible={hovered}
         />
       </mesh>
-
     </group>
   );
 }

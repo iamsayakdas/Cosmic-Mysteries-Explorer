@@ -4,6 +4,8 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import uranusTexture from "../../../assets/textures/uranus/uranus.jpg";
 
 export default function Uranus() {
@@ -12,6 +14,8 @@ export default function Uranus() {
   const atmosphereRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(uranusTexture);
 
@@ -50,6 +54,10 @@ export default function Uranus() {
           }}
           onPointerOut={() => {
             setHovered(false);
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            setSelectedPlanet("Uranus");
           }}
         >
           <sphereGeometry args={[0.42, 64, 64]} />

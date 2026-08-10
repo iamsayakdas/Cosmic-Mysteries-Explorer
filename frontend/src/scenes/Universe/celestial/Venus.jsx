@@ -4,6 +4,8 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import venusTexture from "../../../assets/textures/venus/venus.jpg";
 
 export default function Venus() {
@@ -12,6 +14,8 @@ export default function Venus() {
   const atmosphereRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(venusTexture);
 
@@ -50,6 +54,10 @@ export default function Venus() {
         }}
         onPointerOut={() => {
           setHovered(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          setSelectedPlanet("Venus");
         }}
       >
         <sphereGeometry args={[0.3, 64, 64]} />

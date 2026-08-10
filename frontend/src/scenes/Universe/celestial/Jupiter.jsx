@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { useTexture } from "@react-three/drei";
 
 import PlanetLabel from "./PlanetLabel";
+import { usePlanetSelection } from "../PlanetSelectionContext";
+
 import jupiterTexture from "../../../assets/textures/jupiter/jupiter.jpg";
 
 export default function Jupiter() {
@@ -10,6 +12,8 @@ export default function Jupiter() {
   const planetRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(jupiterTexture);
 
@@ -43,6 +47,10 @@ export default function Jupiter() {
         }}
         onPointerOut={() => {
           setHovered(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          setSelectedPlanet("Jupiter");
         }}
       >
         <sphereGeometry args={[0.75, 64, 64]} />

@@ -5,6 +5,7 @@ import * as THREE from "three";
 
 import PlanetLabel from "./PlanetLabel";
 import Moon from "./Moon";
+import { usePlanetSelection } from "../PlanetSelectionContext";
 
 import earthTexture from "../../../assets/textures/earth/earth.jpg";
 import cloudTexture from "../../../assets/textures/earth/clouds.jpg";
@@ -18,6 +19,8 @@ export default function Earth() {
   const atmosphereRef = useRef();
 
   const [hovered, setHovered] = useState(false);
+
+  const { setSelectedPlanet } = usePlanetSelection();
 
   const texture = useTexture(earthTexture);
   const cloudTextureMap = useTexture(cloudTexture);
@@ -83,6 +86,10 @@ export default function Earth() {
           }}
           onPointerOut={() => {
             setHovered(false);
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            setSelectedPlanet("Earth");
           }}
         >
           <sphereGeometry args={[0.45, 64, 64]} />
@@ -219,10 +226,6 @@ export default function Earth() {
 
                 // =================================
                 // CITY LIGHT DETECTION
-                //
-                // Higher threshold prevents
-                // dark ocean/background pixels
-                // from becoming lights.
                 // =================================
 
                 float lights =
