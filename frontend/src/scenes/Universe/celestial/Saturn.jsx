@@ -19,7 +19,7 @@ export default function Saturn() {
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Saturn orbit
+    // Saturn orbit around the Sun
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.09;
     }
@@ -33,7 +33,11 @@ export default function Saturn() {
   return (
     <group ref={orbitRef}>
       <group position={[-5.5, 0, 0]}>
-        {/* Saturn */}
+
+        {/* ========================= */}
+        {/* SATURN */}
+        {/* ========================= */}
+
         <mesh
           ref={saturnRef}
           onPointerOver={(event) => {
@@ -48,6 +52,8 @@ export default function Saturn() {
 
           <meshStandardMaterial
             map={texture}
+            bumpMap={texture}
+            bumpScale={0.004}
             color="#ffffff"
             roughness={1}
             metalness={0}
@@ -59,12 +65,17 @@ export default function Saturn() {
           />
         </mesh>
 
-        {/* Saturn rings */}
+        {/* ========================= */}
+        {/* SATURN RINGS */}
+        {/* ========================= */}
+
         <mesh
           rotation={[Math.PI / 2.8, 0, 0]}
           renderOrder={1}
         >
-          <ringGeometry args={[0.72, 1.25, 256]} />
+          <ringGeometry
+            args={[0.72, 1.25, 256]}
+          />
 
           <shaderMaterial
             transparent
@@ -81,9 +92,10 @@ export default function Saturn() {
               void main() {
                 vUv = uv;
 
-                gl_Position = projectionMatrix
-                  * modelViewMatrix
-                  * vec4(position, 1.0);
+                gl_Position =
+                  projectionMatrix *
+                  modelViewMatrix *
+                  vec4(position, 1.0);
               }
             `}
             fragmentShader={`
@@ -92,29 +104,37 @@ export default function Saturn() {
               varying vec2 vUv;
 
               void main() {
-                // Convert ring UV coordinates into radial distance.
-                vec2 centered = vUv - 0.5;
 
-                float radius = length(centered) * 2.0;
+                // Convert ring UV coordinates
+                // into radial distance.
+                vec2 centered =
+                  vUv - 0.5;
 
-                // The ring texture is a horizontal radial profile.
-                vec4 ring = texture2D(
-                  ringTexture,
-                  vec2(radius, 0.5)
-                );
+                float radius =
+                  length(centered) * 2.0;
 
+                // Read the radial ring texture.
+                vec4 ring =
+                  texture2D(
+                    ringTexture,
+                    vec2(radius, 0.5)
+                  );
+
+                // Remove transparent areas.
                 if (ring.a < 0.03) {
                   discard;
                 }
 
-                gl_FragColor = vec4(
-                  ring.rgb,
-                  ring.a
-                );
+                gl_FragColor =
+                  vec4(
+                    ring.rgb,
+                    ring.a
+                  );
               }
             `}
           />
         </mesh>
+
       </group>
     </group>
   );
