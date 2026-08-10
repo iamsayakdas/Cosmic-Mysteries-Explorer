@@ -20,20 +20,25 @@ export default function Universe() {
   return (
     <Canvas
       camera={{
-        position: [0, 5, 17],
-        fov: 60,
+        position: [0, 6, 20],
+        fov: 55,
       }}
     >
+      {/* Background */}
       <color attach="background" args={["black"]} />
 
+      {/* Lighting */}
       <Lights />
 
+      {/* Camera controls */}
       <CameraController />
 
+      {/* Space environment */}
       <StarField />
 
       <OrbitPaths />
 
+      {/* Celestial bodies */}
       <Sun />
 
       <Mercury />

@@ -6,7 +6,7 @@ export default function CameraController() {
       enableDamping
       dampingFactor={0.05}
       minDistance={6}
-      maxDistance={30}
+      maxDistance={35}
       target={[0, 0, 0]}
     />
   );
