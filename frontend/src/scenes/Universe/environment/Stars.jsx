@@ -3,13 +3,13 @@ import { Stars } from "@react-three/drei";
 export default function StarField() {
   return (
     <Stars
-      radius={300}
-      depth={60}
-      count={10000}
-      factor={7}
+      radius={400}
+      depth={100}
+      count={12000}
+      factor={5}
       saturation={0}
       fade
-      speed={1}
+      speed={2.0}
     />
   );
 }
