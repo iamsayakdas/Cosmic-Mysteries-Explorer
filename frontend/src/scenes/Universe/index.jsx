@@ -3,7 +3,6 @@ import { Canvas } from "@react-three/fiber";
 import StarField from "./environment/Stars";
 import CameraController from "./controls/CameraController";
 import Lights from "./environment/Lights";
-import Nebula from "./environment/Nebula";
 import OrbitPaths from "./environment/OrbitPaths";
 
 import Sun from "./celestial/Sun";
