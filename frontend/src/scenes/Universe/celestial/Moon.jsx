@@ -23,12 +23,17 @@ export default function Moon() {
 
     // Moon rotation
     if (moonRef.current) {
-      moonRef.current.rotation.y += 0.01;
+      moonRef.current.rotation.y += 0.002;
     }
   });
 
   return (
     <group ref={moonOrbitRef}>
+
+      {/* ========================= */}
+      {/* MOON */}
+      {/* ========================= */}
+
       <mesh
         ref={moonRef}
         position={[0.9, 0, 0]}
@@ -40,13 +45,15 @@ export default function Moon() {
           setHovered(false);
         }}
       >
-        <sphereGeometry args={[0.12, 48, 48]} />
+        <sphereGeometry args={[0.14, 64, 64]} />
 
         <meshStandardMaterial
           map={texture}
           color="#ffffff"
-          roughness={1}
+          roughness={0.95}
           metalness={0}
+          emissive="#111111"
+          emissiveIntensity={0.15}
         />
 
         <PlanetLabel
@@ -54,6 +61,7 @@ export default function Moon() {
           visible={hovered}
         />
       </mesh>
+
     </group>
   );
 }
