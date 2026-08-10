@@ -17,7 +17,8 @@ function Orbit({ radius, color }) {
     const result = [];
 
     for (let i = 0; i <= 128; i++) {
-      const angle = (i / 128) * Math.PI * 2;
+      const angle =
+        (i / 128) * Math.PI * 2;
 
       result.push(
         new THREE.Vector3(
@@ -32,23 +33,29 @@ function Orbit({ radius, color }) {
   }, [radius]);
 
   const geometry = useMemo(() => {
-    return new THREE.BufferGeometry().setFromPoints(points);
+    return new THREE.BufferGeometry().setFromPoints(
+      points
+    );
   }, [points]);
 
   return (
-    <line geometry={geometry}>
+    <lineLoop
+      geometry={geometry}
+      renderOrder={0}
+    >
       <lineBasicMaterial
         color={color}
         transparent
-        opacity={0.25}
+        opacity={0.22}
+        depthWrite={false}
       />
-    </line>
+    </lineLoop>
   );
 }
 
 export default function OrbitPaths() {
   return (
-    <group>
+    <>
       {orbits.map((orbit) => (
         <Orbit
           key={orbit.radius}
@@ -56,6 +63,6 @@ export default function OrbitPaths() {
           color={orbit.color}
         />
       ))}
-    </group>
+    </>
   );
 }
