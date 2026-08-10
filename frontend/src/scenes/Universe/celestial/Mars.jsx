@@ -16,7 +16,7 @@ export default function Mars() {
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
-    // Mars orbit
+    // Mars orbit around the Sun
     if (orbitRef.current) {
       orbitRef.current.rotation.y = t * 0.20;
     }
@@ -29,6 +29,11 @@ export default function Mars() {
 
   return (
     <group ref={orbitRef}>
+
+      {/* ========================= */}
+      {/* MARS */}
+      {/* ========================= */}
+
       <mesh
         ref={planetRef}
         position={[5, 0, 0]}
@@ -44,6 +49,8 @@ export default function Mars() {
 
         <meshStandardMaterial
           map={texture}
+          bumpMap={texture}
+          bumpScale={0.018}
           color="#ffffff"
           roughness={1}
           metalness={0}
@@ -54,6 +61,7 @@ export default function Mars() {
           visible={hovered}
         />
       </mesh>
+
     </group>
   );
 }
